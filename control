@@ -1,0 +1,8 @@
+Package: com.du2s.simpledmb
+Name: SimpleDMB
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome application!
+Maintainer: Du2s
+Author: Du2s
+Section: Utilities
