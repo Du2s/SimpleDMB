@@ -1,4 +1,5 @@
 #import "DMBRootViewController.h"
+#import "DMBSolder.h"
 
 @interface DMBRootViewController ()
 @property (nonatomic, strong) NSMutableArray * objects;
@@ -10,32 +11,48 @@
 	[super loadView];
 
 	_objects = [NSMutableArray array];
-	self.title = @"Du2s";
+	DMBSolder * SolderObj = [[DMBSolder alloc] 
+		initWithString:@"Du2s" 
+		startDateString:@"2022-11-21 00:00:00"];
+	self.title = SolderObj.name;
 	UILabel * myLabel = [[UILabel alloc] 
 		initWithFrame: CGRectMake(100,100,200,200)];
-	myLabel.text = [self getDateString];
+	myLabel.text = [SolderObj getDaysAsString];
 	[myLabel setBackgroundColor: [UIColor clearColor]];
 	myLabel.textColor = [UIColor redColor];
 	[self.view addSubview:myLabel];
 }
-- (NSString*) getDateString {
-	NSDate * now = [NSDate date];
-	NSLog(@"%f", 0.6);
-	NSDateFormatter *armyDaysFormat = [[NSDateFormatter alloc] init];
-	[armyDaysFormat setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-	NSDate * startDate = [armyDaysFormat dateFromString: 
-					    @"2022-11-21 00:00:00"];
-	//NSDate * now = [armyDaysFormat dateFromString:
-	//				    @"2023-11-21 00:00:00"];
-	NSCalendar * gregorianCalendar = [[NSCalendar alloc]
-		initWithCalendarIdentifier:NSGregorianCalendar];
-	//NSUInteger unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit;
-	NSDateComponents * armyDaysComponents = [gregorianCalendar components:NSCalendarUnitDay
-	//NSDateComponents * armyDaysComponents = [gregorianCalendar components:unitFlags
-	     fromDate:startDate
-		  toDate: now
-		 options:0];
-	return [[NSString alloc] initWithFormat: @"%ld",
-	       365 - (long)armyDaysComponents.day];
-}
+@end
+
+@implementation DMBSolder 
+	-(DMBSolder *) initWithString: (NSString *) solderName 
+		     startDateString:(NSString *) startDateString{
+		self = [super init];
+		self.name = solderName;
+		NSDateFormatter *armyDaysFormat = [[NSDateFormatter alloc] init];
+		[armyDaysFormat setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+		self.startDate = [armyDaysFormat dateFromString: startDateString];
+		return self;
+	}
+	-(void) countDays{
+		self.todayDate = [NSDate date];
+		NSCalendar * gregorianCalendar = [[NSCalendar alloc]
+			initWithCalendarIdentifier:NSGregorianCalendar];
+		NSDateComponents * armyDaysComponents = [gregorianCalendar
+		       		components:NSCalendarUnitDay
+				fromDate:self.startDate
+		  		toDate: self.todayDate
+		 		options:0];
+		self.remainDays = [NSNumber 
+			numberWithInt: 365 - armyDaysComponents.day];
+	}
+	-(int) getDaysAsInt{
+		[self countDays];
+		return [self.remainDays intValue];
+	}
+	-(NSString *) getDaysAsString{
+		[self countDays];
+		return  [[NSString alloc] 
+			initWithFormat:	@"%d", [self.remainDays intValue]];
+	}
 @end
